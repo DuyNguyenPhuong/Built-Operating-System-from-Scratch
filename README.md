@@ -139,3 +139,6 @@ D= D+1
 - R?: Virtual Register
 
 // This project is update latest on 4/3/2023
+
+13.
+In Multiprogramming, OS manages which job to run(schedule); Protect other memory from others, decide which to resume when CPU available

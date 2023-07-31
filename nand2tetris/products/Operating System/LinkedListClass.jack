@@ -1,0 +1,121 @@
+class LinkedList {
+
+	field int length; // length of the list
+	field int pointer; // the pointer of the block (where it actually is)
+	field LinkedList next; // point to the next list
+	field Array blockArray; // the array of the list
+
+	// static LinkedList freeList;
+
+	// construct a new list
+	constructor LinkedList new(int inputlength,int thePointer, LinkedList node){
+		let length = inputlength;
+		let pointer = thePointer;
+		let next = node;
+		return this;
+
+	}
+
+	// setter for length
+	method void setLength(int input){
+		let length = input;
+		return;
+	}
+	// get length
+	method int getlength() { return length;}
+
+	// return the current list Pointer
+	method int getpointer(){ return pointer;}
+
+	// return next
+	method LinkedList getnext(){ return next; }
+
+	// Delete the abstract data types from the memory heap
+	method void dispose() {
+		if(~(next = null)) {
+			do next.dispose();
+		}
+
+		do Memory.deAlloc(this);
+		return;
+	}
+
+	method Array transverseAlloc(int size){
+		// walk through the linked list and check for any collisions
+		// using recursion
+		var int heapIndex;
+		var Array block;
+		var LinkedList nextSub;
+
+		let nextSub = next;
+
+		// let block = 0;
+		// let x = block[j] // j is a RAM address
+		// let block[j] = y // j is a RAM address
+
+		if(~(next = null)) {
+			// first fit
+
+			if (length > size){
+				// cut list into two separate lists
+				let length = length - size -1; // minus one for the length of the next block
+				let heapIndex = getpointer();
+
+				/** create new block with null because he is off in space chilling by himself until he gets
+				*		deAlloc. When that happens you can just add him back to the freeList
+				*/
+				let block = heapIndex + length + 1;
+				let block[-1] = size + 1; // put block size in the RAM
+				// do LinkedList.new(size + 1,(heapIndex + length), null);
+				//return (heapIndex + length); // returns the int pointer of where in the heap the new block is
+
+				return block;
+			}
+
+      // recursion to call function on next node
+			do next.transverseAlloc(size);
+		}
+
+		/** if you get to this code, that means you didn't find any blocks of that size
+		* 	so now we will do defragmentation.
+		*  	For defragmentation, search through the freeList (which is a linked list)
+		*		and if two blocks are next to eachother combine them. (if the pointer plus length equals the next pointer
+		*   then they are next to eachother in the code)
+		*/
+		do defragmentation();
+		do transverseAlloc(size); // defrag should have worked so now try one more time
+		return blockArray; // failure
+	}
+
+	method void defragmentation() {
+		if(~(next = null)){
+		// check if this pointer + length equals the next pointer, if so, they are next to eachother
+			if (next.checkAll((pointer + length) , next.getpointer())){
+				// if it finds two that are next to eachother in the RAM
+
+				// sweet, they are next to eachother. We need to combine them now. Make this next list point to the next list and combine the length of the two and then we are done.
+				let length = length + next.getlength(); // combine the length with the next guy
+				let next 	 = next.getnext(); // sets the current list next to the next of the second block
+				do next.dispose(); // dispose the no longer needed LinkedList
+
+			}
+
+			}
+			do next.defragmentation(); // recursion call
+			return;
+		}
+
+
+	// check if a and b are equal to eachother and checks to see if a is in any of them
+	method boolean checkAll(int a, int b){
+		if(~(next = null)){
+			if( a = b){
+				return true;
+			}
+			do next.checkAll( a , next.getpointer()); // recursion call
+		}
+		return false;
+	}
+
+
+}

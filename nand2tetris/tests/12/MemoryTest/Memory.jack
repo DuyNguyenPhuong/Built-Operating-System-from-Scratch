@@ -1,0 +1,119 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Memory.jack
+
+/**
+ * This library provides two services: direct access to the computer's main
+ * memory (RAM), and allocation and recycling of memory blocks. The Hack RAM
+ * consists of 32,768 words, each holding a 16-bit binary number.
+ */
+
+class Memory {
+
+    static int heapStart, heapEnd, heapLength;
+
+    static LinkedList freeList;
+
+    static Array RAM;
+    static int currentNullPointer;
+
+    // Initializes the class.
+    function void init() {
+
+      let RAM = 0;
+      let heapStart = 2048;
+      let heapEnd   = 16384;
+      let heapLength = (heapEnd - heapStart);
+
+      let RAM[heapStart] = heapLength;
+      let RAM[heapStart+1] = null;
+      //let freeList = LinkedList.new(0,0,null);
+      //let freeList = LinkedList.new(heapLength,heapStart,null);
+
+      return;
+    }
+
+
+    /** Returns the RAM value at the given address. */
+    function int peek(int address) { return RAM[address];}
+
+
+    /** Sets the RAM value at the given address to the given value. */
+    function void poke(int address, int value) {
+      let RAM[address] = value;
+      return;
+    }
+
+
+    /** Finds an available RAM block of the given size and returns
+     *  a reference to its base address. */
+    function Array alloc(int size) {
+      //var int localpointer;
+	//do Memory.poke(4,heapStart);
+	//let RAM = 0;
+
+	//let RAM[4] = heapStart;
+
+      //let localpointer = RAM[1];
+      return Memory.allocRecursion(size,heapStart); // pops the value to temp0 b/c it is a function
+      // I need to manually make the compiler push temp0 to the Local 0 before return
+      //let RAM[localpointer] = RAM[5];
+
+      //return RAM;
+
+    }
+
+
+    /** the recursion part of alloc */
+    function Array allocRecursion(int size, int currentPointer){
+
+      var int blockSize, nextPointer, updateCutBlockSize, newPointer;
+      var Array block;
+
+      let blockSize = RAM[currentPointer];
+      let nextPointer = RAM[currentPointer+1];
+
+      if(blockSize > size){ // yes it works, lets make a new block
+        let updateCutBlockSize = blockSize - size -1;
+        let RAM[currentPointer] = updateCutBlockSize;
+        let block = currentPointer + updateCutBlockSize + 1; // Array of new available block
+        let block[-1] = size + 1;
+        return block;
+      }
+
+      if( ~(RAM[currentPointer+1] = null)) { // keep going until you hit the null in the LinkedList
+        do Memory.allocRecursion(size, RAM[currentPointer+1]); // recursion call to run through LinkedList
+      }
+
+      return block;
+    }
+
+
+    function void insert(int currentPointer, int segmentPointer){
+      var int nextPointer;
+      let nextPointer = RAM[currentPointer+1];
+
+      if(~(RAM[currentPointer+1] = null)){
+        do Memory.insert(nextPointer, segmentPointer);
+      }
+      // means we are at null, now we can insert into the list
+      let RAM[currentPointer+1] = segmentPointer; // change where null is
+      let RAM[segmentPointer]   = null; // now the inserted guy is null and he is pointed to by the last guy
+      return;
+    }
+
+
+    /** De-allocates the given object (cast as an array) by making
+     *  it available for future allocations. */
+    function void deAlloc(Array o) {
+      var int segmentPointer, segmentLength;
+
+      let segmentPointer = o - 1;
+      let segmentLength = o[-1];
+
+      do Memory.insert(heapStart,segmentPointer);
+
+      return;
+    }
+}

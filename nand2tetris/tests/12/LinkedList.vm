@@ -1,0 +1,181 @@
+function LinkedList.new 0
+push constant 4
+call Memory.alloc 1
+pop pointer 0
+push argument 0
+pop this 0
+push argument 1
+pop this 1
+push argument 2
+pop this 2
+push pointer 0
+return
+function LinkedList.setLength 0
+push argument 0
+pop pointer 0
+push argument 1
+pop this 0
+push constant 0
+return
+function LinkedList.getlength 0
+push argument 0
+pop pointer 0
+push this 0
+return
+function LinkedList.getpointer 0
+push argument 0
+pop pointer 0
+push this 1
+return
+function LinkedList.getnext 0
+push argument 0
+pop pointer 0
+push this 2
+return
+function LinkedList.dispose 0
+push argument 0
+pop pointer 0
+push this 2
+push constant 0
+eq
+not
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push this 2
+call LinkedList.dispose 1
+pop temp 0
+label IF_FALSE0
+push pointer 0
+call Memory.deAlloc 1
+pop temp 0
+push constant 0
+return
+function LinkedList.transverseAlloc 3
+push argument 0
+pop pointer 0
+push this 2
+pop local 2
+push this 2
+push constant 0
+eq
+not
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push this 0
+push argument 1
+gt
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push this 0
+push argument 1
+sub
+push constant 1
+sub
+pop this 0
+push pointer 0
+call LinkedList.getpointer 1
+pop local 0
+push local 0
+push this 0
+add
+push constant 1
+add
+pop local 1
+push constant 1
+neg
+push local 1
+add
+push argument 1
+push constant 1
+add
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 1
+return
+label IF_FALSE1
+push this 2
+push argument 1
+call LinkedList.transverseAlloc 2
+pop temp 0
+label IF_FALSE0
+push pointer 0
+call LinkedList.defragmentation 1
+pop temp 0
+push pointer 0
+push argument 1
+call LinkedList.transverseAlloc 2
+pop temp 0
+push this 3
+return
+function LinkedList.defragmentation 0
+push argument 0
+pop pointer 0
+push this 2
+push constant 0
+eq
+not
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push this 2
+push this 1
+push this 0
+add
+push this 2
+call LinkedList.getpointer 1
+call LinkedList.checkAll 3
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push this 0
+push this 2
+call LinkedList.getlength 1
+add
+pop this 0
+push this 2
+call LinkedList.getnext 1
+pop this 2
+push this 2
+call LinkedList.dispose 1
+pop temp 0
+label IF_FALSE1
+label IF_FALSE0
+push this 2
+call LinkedList.defragmentation 1
+pop temp 0
+push constant 0
+return
+function LinkedList.checkAll 0
+push argument 0
+pop pointer 0
+push this 2
+push constant 0
+eq
+not
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push argument 1
+push argument 2
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push constant 0
+not
+return
+label IF_FALSE1
+push this 2
+push argument 1
+push this 2
+call LinkedList.getpointer 1
+call LinkedList.checkAll 3
+pop temp 0
+label IF_FALSE0
+push constant 0
+return

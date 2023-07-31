@@ -1,0 +1,173 @@
+/**
+ * Represents character strings. In addition for constructing and disposing
+ * strings, the class features methods for getting and setting individual
+ * characters of the string, for erasing the string's last character,
+ * for appending a character to the string's end, and more typical
+ * string-oriented operations.
+ */
+class String {
+
+    field Array stringArray;
+    field int   stringArrayPointer;
+    field int   currentLetter;
+    field int   stringLength;
+
+
+    static boolean negval;
+    static Array temp;
+    static int   tempPointer;
+    /** constructs a new empty string with a maximum length of maxLength
+     *  and initial length of 0. */
+    constructor String new(int maxLength) {
+      let stringLength = maxLength;
+      let stringArray = Array.new(maxLength + 1);
+      let stringArrayPointer = stringArray;
+      let currentLetter = 0;
+      let temp = Array.new(100);
+      let tempPointer = temp;
+      let negval = false;
+      return this;
+    }
+
+    /** Disposes this string. */
+    method void dispose() {
+
+        do stringArray.dispose();
+        return;
+    }
+
+    /** Returns the current length of this string. */
+    method int length() {
+      return currentLetter;
+    }
+
+    /** Returns the character at the j-th location of this string. */
+    method char charAt(int j) {
+      var char tempChar;
+      let tempChar = stringArray[j];
+      return tempChar;
+    }
+
+    /** Sets the character at the j-th location of this string to c. */
+    method void setCharAt(int j, char c) {
+      let stringArray[j] = c;
+      return;
+    }
+
+    /** Appends c to this string's end and returns this string. */
+    method String appendChar(char c) {
+      let temp = stringArrayPointer;
+      let temp[currentLetter] = c;
+      let currentLetter = currentLetter + 1;
+      return this;
+    }
+
+    /** Erases the last character from this string. */
+    method void eraseLastChar() {
+      let stringArray[currentLetter] = 0; // erase letter
+      let currentLetter = currentLetter - 1; // subtract pointer
+      return;
+    }
+
+    function int intValDigit(int input){
+      return input + 48;
+    }
+    /** Returns the integer value of this string,
+     *  until a non-digit character is detected. */
+    method int intValue() {
+
+      var int value;
+      var int i,d;
+      var boolean negval;
+      let i = 0;
+      // check for neg character ascii 45
+      if(stringArray[i] = 45){
+        let negval = true;
+        let i = i + 1 ;
+      }
+      while(i < currentLetter ){
+        //do Output.printInt(d);
+        let d = stringArray[i] - 48; // array has ascii codes so subtract 48 for digit
+        //if(negval){ let d = d * -1 ;}
+        //do Output.printInt(d);
+        //do Output.println();
+        let value = (value * 10) + d; // + value + value +value + value + value +value+value + value + value
+
+        let i = i + 1;
+      }
+      if(negval){ return value * -1 ;}
+
+      return value;
+    }
+
+    function int digitsInInt(int value){
+      var int i, digit;
+      let digit = 0;
+      while(value > 0){
+        let value = value / 10; // take away a digit
+        let digit = digit + 1;
+      }
+      return digit;
+    }
+
+    /** Sets this string to hold a representation of the given value. */
+    method void setInt(int val) {
+      var int lastDigit;
+      var char c;
+      var char tempChar;
+      // make a new string
+      //do dispose(); // dispose the array make a new one
+      //let stringArray = Array.new(String.digitsInInt(val));
+      //let stringArrayPointer = stringArray;
+      let currentLetter = 0;
+
+      if(val < 0){
+         let negval = true;
+         let val = val * (-1);
+       }
+      let lastDigit = String.mod(val, 10);
+      let c = String.intValDigit(lastDigit);
+      if(val < 10){
+        if(negval){do appendChar(45);}
+        do appendChar(c);
+      }
+      else{
+        do setInt(val/10);
+        do appendChar(c);
+      }
+
+      return;
+    }
+
+
+    // mod function
+    function int mod(int value,int divededBy){
+      var int i, remainder;
+      let i = 0;
+      let remainder = value;
+      while((remainder) > (divededBy -1)){
+        if(divededBy = remainder){
+          let remainder = 0;
+          return remainder; // because it divided into it equally
+        }else{
+          let remainder = remainder - divededBy; // take one bite away
+        }
+      }
+      return remainder; // returns whats left. thus performing % or the modulo function
+    }
+
+    /** Returns the new line character. */
+    function char newLine() {
+      return 128;
+    }
+
+    /** Returns the backspace character. */
+    function char backSpace() {
+      return 129;
+    }
+
+    /** Returns the double quote (") character. */
+    function char doubleQuote() {
+      return 34;
+    }
+}

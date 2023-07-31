@@ -1,0 +1,276 @@
+/**
+ * A library of functions for displaying graphics on the screen.
+ * The Hack physical screen consists of 512 rows (indexed 0..511, top to bottom)
+ * of 256 pixels each (indexed 0..255, left to right). The top left pixel on
+ * the screen is indexed (0,0).
+ */
+class Screen {
+
+    static Array binaryScreen, binaryShifter;
+    static int   binaryScreenPointer, binaryShifterPointer;
+    static boolean currentColor;
+    static int screenStart;
+    static Array RAM;
+    /** Initializes the Screen. */
+    function void init() {
+      //do Screen.clearScreen();
+      let screenStart = 16384;
+      let binaryScreen = Array.new(16);
+      let binaryShifter = Array.new(16);
+      let binaryScreenPointer = binaryScreen;
+      let binaryShifterPointer = binaryShifter;
+      let RAM = 0;
+      return;
+    }
+
+    /** Erases the entire screen. */
+    function void clearScreen() {
+
+      // make all values in screen part of memory 0
+      var int start, finish;
+      let start = screenStart;
+      let finish = 24575;
+      while(start < finish){
+        let RAM[start] = 0;
+        let start = start + 1;
+      }
+      return;
+    }
+
+    /** Sets the current color, to be used for all subsequent drawXXX commands.
+     *  Black is represented by true, white by false. */
+    function void setColor(boolean b) {
+      let currentColor = ~b;
+      return;
+    }
+
+
+    // mod function
+    function int mod(int value,int divededBy){
+      var int i, remainder;
+      let i = 0;
+      let remainder = value;
+      while((remainder) > (divededBy -1)){
+        if(divededBy = remainder){
+          let remainder = 0;
+          return remainder; // because it divided into it equally
+        }else{
+          let remainder = remainder - divededBy; // take one bite away
+        }
+      }
+      return remainder; // returns whats left. thus performing % or the modulo function
+    }
+
+    // a ^ b
+    function int power(int a, int b){
+      var int i, k, total;
+      let i = 1;
+      let total = a;
+      while(i<b){
+
+        // this code perfroms a * a how many times you need it
+        let k = 1;
+        while(k<a){
+
+          let total = total + total;
+          let k = k + 1;
+        }
+        //let total = Math.multiply(total,a);
+        let i = i + 1;
+      }
+      if( b = 0){ let total = 1;} // anything to the zero power is 1
+      //if( start){ let total = total -1;}// starting at (2^n) -1
+      return total;
+
+    }
+
+
+    /** Draws the (x,y) pixel, using the current color. */
+    function void drawPixel(int x, int y) {
+      var int address, value, remainder, numberForBinaryOp;
+
+
+      let address = (32 * y) + (x / 16);
+      let value = Memory.peek(screenStart + address);
+      //do Output.printInt(value);
+      // now find the ( x % 16)th bit of value and do the or operation to turn just that bit to on
+      let remainder = Screen.mod(x,16); // returns result of x % 16
+      // 2 ^ (x % 16) gives us binary bit we want to change ie (00001000) is 2^0
+      let numberForBinaryOp = Screen.power(2,remainder);
+      // convert into binary array
+      let binaryShifterPointer = ConvertToBinary.convert(numberForBinaryOp,binaryShifterPointer); // array with bit to change
+      let binaryScreenPointer = ConvertToBinary.convert(value,binaryScreenPointer); // binary array of 16 bit value to change one bit
+      //do Screen.printArray(binaryScreenPointer);
+      do Screen.bitwiseOR(binaryShifterPointer,binaryScreenPointer, currentColor);// bitwise OR operation
+      //do Output.printInt(value);
+      //do Output.println();
+      let value =ConvertToBinary.binaryToInt(binaryScreenPointer); // convert byte back to int value to be stored
+      //do Output.printInt(address);
+      do Memory.poke(screenStart + address,value); // now we set the value that has just that bit changed
+      //do Screen.printArray(binaryShifterPointer);
+      //do Output.println();
+      //do Screen.printArray(binaryScreenPointer);
+      return;
+
+      //let ans = ConvertToBinary.binaryToInt(sum);
+
+    }
+
+    function void printArray(int PointerA){
+      var int i;
+      let i = 0;
+      while(i < 16){
+        do Output.printInt(PointerA[i]);
+        let i = i + 1;
+      }
+      return;
+    }
+
+    function void bitwiseOR(int pointerA,int pointerB,boolean currentColor){
+        var int i, bitA, bitB;
+        let i = 0;
+        while(i<16){
+          let bitA = pointerA[i];
+          let bitB = pointerB[i];
+          if(bitA | bitB){ // bitwise or
+            let pointerB[i] = 1; // if either bit is 1 then set the B bit to one
+            // bitA tells us which one to turn on/off and so if that is true and turnoff is true then that means we want to turn that bit to zero not one.
+            if(currentColor){ // white is when current color is false, so if we negate this is when it is true
+              if(bitA=1){let pointerB[i] = 0;}
+            }
+          }
+
+
+          let i = i + 1;
+        }
+        return;
+    }
+
+    /** Draws a line from pixel (x1,y1) to pixel (x2,y2), using the current color. */
+    function void drawLine(int x1, int y1, int x2, int y2) {
+      var int a, b, dx, dy;
+      var int tempX, tempY;
+      var boolean switchleft, switchDown;
+      var int xplusa, yplusb;
+      var int diff;
+      var boolean conditions;
+      let dx = x2 - x1;
+      let dy = y2 - y1;
+      let conditions = true;
+      let switchDown = false;
+      let switchleft = false;
+
+      // switch points
+      if( (dx <0) & (dy<0)){
+        let dx = Math.abs(dx);
+        let dy = Math.abs(dy);
+        let tempX = x1;
+        let tempY = y1;
+        let x1 = x2;
+        let y1 = y2;
+        let x2 = tempX;
+        let y2 = tempY;
+      }
+
+      // move left instead of right on the algorithm
+      if( (dx<0) & (dy>0)){  let switchleft = true; let dx = Math.abs(dx);}
+      // move down instead of up on the algorithm
+      if( (dx>0) & (dy<0)){  let switchDown = true; let dy = Math.abs(dy);}
+      // if dx = 0 then draw vertical line
+      if(dx = 0){
+        let conditions = false;
+         // if line upside down just make positive and start from other point
+        if(dy < 0){
+          let dy = Math.abs(dy);
+          let y1 = y2;
+         }
+        while(dy > 0){
+          do Screen.drawPixel(x1 , y1+dy);// start at the top
+          let dy = dy - 1; // draw down each pixel
+        }
+      }
+      // if dy = 0 then draw horizontal line
+      if(dy = 0){
+        let conditions = false;
+        // if backwards just switch the point and make positive and go
+        if(dx < 0){
+          let dx = Math.abs(dx);
+          let x1 = x2;
+         }
+        while(dx > 0){
+          do Screen.drawPixel(x1+dx , y1);// start at the x2 end by adding dx
+          let dx = dx - 1; // draw back to x1 by subtracting one pixel at a time
+        }
+      }
+
+      // initialze variables
+      let a = 0;
+      let b = 0;
+      let diff = 0;
+      if(conditions){
+        while(((a<dx) | (a=dx)) & ((b<dy) | (b=dy))){
+          if(switchDown | switchleft){
+            if(switchDown){
+              do Screen.drawPixel(x1+a , y1-b); // go down not up
+            }
+            else{
+              do Screen.drawPixel(x1-a , y1+b);} // switchLeft so subtract a
+            }
+          else{do Screen.drawPixel(x1+a , y1+b);} // most of the time
+
+          //let diff =  a*dy - b*dx;
+          // a is right and b is up ( positive but really down to us on the screen)
+          if(diff < 0){ let a = a + 1; let diff = diff + dy;}
+          else{ let b = b + 1; let diff = diff - dx; }
+        }
+      }
+      return;
+    }
+
+    /** Draws a filled rectangle whose top left corner is (x1, y1)
+     * and bottom right corner is (x2,y2), using the current color. */
+    function void drawRectangle(int x1, int y1, int x2, int y2) {
+
+      // draw vertical lines to fill in the rectangle
+      var int dx, dy, temp;
+
+      let dx = x2 - x1;
+      let dy = y2 - y1;
+      if(dx < 0){
+        let temp = x1;
+        let x1 = x2;
+        let x2 = temp;
+        let dx = Math.abs(dx);
+       }
+
+
+       while(dx>0){
+         do Screen.drawLine(x1+dx,y1,x1+dx,y1+dy);
+         let dx = dx - 1;
+       }
+
+      return;
+    }
+
+    /** Draws a filled circle of radius r<=181 around (x,y), using the current color. */
+    function void drawCircle(int x, int y, int r) {
+      /**we will draw lines to fill in.
+      * use pythagorean theorem to find side lengths of triangles
+      * sqrt(r^2 - dy^2) is side length. so start from r ( top of circle)
+      * add this side length on right and left side, go down one pixel repeat
+      * until y = -r
+      */
+      var int sideOfTriangle, dy, insideSqrt;
+      let dy = r ; // take y, add r, you are at the top of the circle
+      while( dy > (-r)){
+        let insideSqrt = Math.multiply(r,r) - Math.multiply(dy,dy); //(r^2 - dy^2)
+        let sideOfTriangle = Math.sqrt(insideSqrt);
+        // first point is to the left (x - sideOfTriangle) and 2nd point is on the right (x + sideOfTriangle)
+        do Screen.drawLine(x - sideOfTriangle, y + dy,x + sideOfTriangle, y + dy);
+        let dy = dy - 1; // go down one pixel until dy is at -r
+      }
+
+
+      return;
+    }
+}

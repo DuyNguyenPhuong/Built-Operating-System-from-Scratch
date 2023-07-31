@@ -62,9 +62,7 @@ In this project, I will build a computer from scratch, from CPU to high-level la
 
 ## 🔧 Built With
 
-[![Kotlin][Kotlin]][Kotlin-url] <br>
-![Java][Java]
-
+I built this project by Assembly Language
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -74,23 +72,13 @@ In this project, I will build a computer from scratch, from CPU to high-level la
 
 ### Prerequisites
 
-To run the app, you must install Anroid Studio(https://developer.android.com/studio)
+Get used to Assembly Language and Operating System
 
 ### Installation
 
 1. Clone the repo
    ```sh
-   git clone [https://github.com/your_username_/Project-Name.git](https://github.com/DuyNguyenPhuong/Emergency-Alert-Global-Version.git)
-   ```
-3. Install NPM packages
-   ```sh
-   npm install
-   ```
-4. In gradle build. Copy and Paste this code
-   ```
-   buildFeatures{
-       viewBinding true
-   }
+   git clone [https://github.com/your_username_/Project-Name.git](https://github.com/DuyNguyenPhuong/Low-latency-Trading-Program.git)
    ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -102,12 +90,7 @@ To run the app, you must install Anroid Studio(https://developer.android.com/stu
 <!-- USAGE EXAMPLES -->
 ## :mortar_board: Usage
 
-You can run this project by clicking Make Project Button (Green Arrow) in the top right of the project or type this in the terminal
-```bash
-AndroidStudio ~/my_android_project
-```
-
-_For more examples, please refer to the [Documentation](https://developer.android.com/studio/run)_
+You can run this project by clicking the Make Project Button (Green Arrow) in the top right of the project or type this in the terminal
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

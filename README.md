@@ -70,6 +70,8 @@ By implementing these essential functions of the computer, I understood how a co
 
 ## 📟 Code Example
 
+This code accounts for Add Implementation
+
 ```asm
 // Computes R0 = 2 + 3  (R0 refers to RAM[0])
 @2
@@ -79,6 +81,40 @@ D=D+A
 @0
 M=D
 ```
+
+##### Add 2 constant in Virtual Machine
+
+```
+// Pushes and adds two constants.
+push constant 7
+push constant 8
+add
+```
+
+##### Array Class Implementation:
+
+```
+class Array {
+
+    /** Constructs a new Array of the given size. */
+    function Array new(int size) {
+      return Memory.alloc(size);
+
+    }
+
+    /** Disposes this array. */
+    method void dispose() {
+      // we need an Array for deAlloc(). So get the this
+      //var Array that;
+      //let that = Memory.peek(4);
+      do Memory.deAlloc(this);
+      return;
+    }
+}
+```
+
+
+
 
 ## Intro to Hack Assembly
 

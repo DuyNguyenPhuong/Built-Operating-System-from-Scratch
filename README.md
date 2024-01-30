@@ -12,7 +12,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <h2 align="center">Emergency Alert Global Version </h3>
+  <h2 align="center">Build a Computer From Scratch </h3>
 
   <p align="center">
     An app that contacts you to the authority in just 1 click!
